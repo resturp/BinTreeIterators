@@ -11,6 +11,11 @@ public class InFixIterator implements Iterator<BinTree> {
 
 	public InFixIterator(BinTree root) {
 		next = root;
+		if (next == null)
+			return;
+
+		while (next.left != null)
+			next = next.left;
 	}
 
 	public boolean hasNext() {
@@ -19,28 +24,24 @@ public class InFixIterator implements Iterator<BinTree> {
 
 	public BinTree next() {
 		BinTree r = next;
-		
-		if (next.left != null) {
-			next = next.left;
-		} else {
-			if (next.right != null) {
-				next = next.right;
-			} else {
-				if (next.parent.right != null) {
-					while (next.parent != null && next == next.parent.right) {
-						next = next.parent;
-					}
-					if (next.parent != null) {
-						next = next.parent.right;
-					} else {
-						next = null;
-					}
-					
-				} else {
-					next = null;
-				}
-			}
+
+		if (next.right != null) {
+			next = next.right;
+			while (next.left != null)
+				next = next.left;
+			return r;
 		}
-		return r;
+
+		while (true) {
+			if (next.parent == null) {
+				next = null;
+				return r;
+			}
+			if (next.parent.left == next) {
+				next = next.parent;
+				return r;
+			}
+			next = next.parent;
+		}
 	}
 }
